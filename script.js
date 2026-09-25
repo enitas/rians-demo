@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startBtn = document.getElementById("start-btn");
+    const demoBtn = document.getElementById("demo-btn");
     const teamInput = document.getElementById("team-name");
     const screenWelcome = document.getElementById("screen-welcome");
     const screenGame = document.getElementById("screen-game");
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("status-message");
     const missionTitle = document.getElementById("mission-title");
     const missionDesc = document.getElementById("mission-desc");
+    const demoPanel = document.getElementById("demo-panel");
     
     const actionContainer = document.getElementById("action-container") || createActionContainer();
 
@@ -28,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
         { name: "Banc de l'église", lat: 47.18578, lng: 2.61313, clue: "Niveau du banc", code: "MUR" },
         { name: "Zone 'En dessous'", lat: 47.18517, lng: 2.61380, clue: "Indice 'en dessous'", code: "MURE" }
     ];
-    const NFC_RADIUS = 25;
 
     let map = null;
     let playerMarker = null;
@@ -39,41 +40,53 @@ document.addEventListener("DOMContentLoaded", () => {
     let parvisUnlocked = false;
     let currentNfcIndex = 0;
     let collectedFragments = [];
+    let isDemoMode = false;
 
     let audioEnigme1 = new Audio('enigme1.mp3');
 
-    if (localStorage.getItem("gameStarted") === "true") {
-        restoreGameState();
-    }
+    // Nettoyage au chargement pour forcer l'affichage propre de l'accueil pro
+    localStorage.removeItem("gameStarted");
 
     startBtn.addEventListener("click", () => {
-        const teamName = teamInput.value.trim();
+        initGame(false);
+    });
+
+    demoBtn.addEventListener("click", () => {
+        isDemoMode = true;
+        initGame(true);
+    });
+
+    function initGame(demo) {
+        const teamName = teamInput.value.trim() || (demo ? "Délégation Officielle (Mairie)" : "");
         if (!teamName) {
-            alert("Veuillez entrer un nom d'équipe valide !");
+            alert("Veuillez entrer un nom d'équipe ou de délégation valide !");
             return;
         }
 
         localStorage.setItem("teamName", teamName);
         localStorage.setItem("gameStarted", "true");
         localStorage.setItem("startTime", Date.now());
+        localStorage.setItem("isDemoMode", demo ? "true" : "false");
 
-        startGameSession(teamName);
-    });
+        startGameSession(teamName, demo);
+    }
 
-    function startGameSession(teamName) {
+    function startGameSession(teamName, demo) {
+        isDemoMode = (localStorage.getItem("isDemoMode") === "true") || demo;
+
         screenWelcome.classList.remove("active");
         screenGame.classList.add("active");
         gameHeader.classList.remove("hidden");
         displayTeamName.textContent = teamName;
 
+        if (isDemoMode) {
+            demoPanel.classList.remove("hidden");
+            setupDemoControls();
+        }
+
         startTimer();
         initMap();
         updateMissionDisplay();
-    }
-
-    function restoreGameState() {
-        const teamName = localStorage.getItem("teamName") || "Agents";
-        startGameSession(teamName);
     }
 
     function startTimer() {
@@ -84,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (timeLeft <= 0) {
                 timerDisplay.textContent = "00:00:00";
-                timerDisplay.style.color = "var(--danger-color)";
+                timerDisplay.style.color = "var(--accent-red)";
                 statusMessage.textContent = "TEMPS ÉCOULÉ ! Mission échouée.";
                 return;
             }
@@ -109,8 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }).addTo(map);
 
         parvisCircle = L.circle([PARVIS_LAT, PARVIS_LNG], {
-            color: '#d4af37',
-            fillColor: '#d4af37',
+            color: '#2563eb',
+            fillColor: '#2563eb',
             fillOpacity: 0.3,
             radius: PARVIS_RADIUS
         }).addTo(map).bindPopup("Parvis de l'Église (Point Audio)");
@@ -118,24 +131,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if ("geolocation" in navigator) {
             navigator.geolocation.watchPosition(
                 (position) => {
+                    if (isDemoMode) return; // En mode démo, on ignore le GPS réel
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-
-                    if (!playerMarker) {
-                        playerMarker = L.marker([lat, lng]).addTo(map).bindPopup("Votre position");
-                    } else {
-                        playerMarker.setLatLng([lat, lng]);
-                    }
-
-                    checkGameZones(lat, lng);
+                    updatePlayerPosition(lat, lng);
                 },
                 (error) => {
                     console.error("Erreur GPS : ", error.message);
-                    statusMessage.textContent = "⚠️ Activez la géolocalisation.";
+                    if (!isDemoMode) statusMessage.textContent = "⚠️ Activez la géolocalisation.";
                 },
                 { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
             );
         }
+    }
+
+    function updatePlayerPosition(lat, lng) {
+        if (!playerMarker) {
+            playerMarker = L.marker([lat, lng]).addTo(map).bindPopup("Votre position");
+        } else {
+            playerMarker.setLatLng([lat, lng]);
+        }
+        checkGameZones(lat, lng);
     }
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -149,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function checkGameZones(lat, lng) {
         if (gameStep <= 1) {
             const distParvis = calculateDistance(lat, lng, PARVIS_LAT, PARVIS_LNG);
-            if (distParvis <= PARVIS_RADIUS) {
+            if (distParvis <= PARVIS_RADIUS || isDemoMode) {
                 if (!parvisUnlocked) {
                     parvisUnlocked = true;
                     if (gameStep === 0) gameStep = 1;
@@ -161,11 +177,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (parvisUnlocked && !audioEnigme1.paused) audioEnigme1.pause();
                 parvisUnlocked = false;
                 statusMessage.textContent = `🗺️ Rejoignez le parvis (${Math.round(distParvis)} m restants)...`;
-                statusMessage.style.color = "var(--accent-color)";
+                statusMessage.style.color = "#60a5fa";
             }
         } else if (gameStep === 3) {
             const distActe2 = calculateDistance(lat, lng, TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG);
-            if (distActe2 <= ACTE_II_RADIUS) {
+            if (distActe2 <= ACTE_II_RADIUS || isDemoMode) {
                 gameStep = 4; 
                 updateMissionDisplay();
             } else {
@@ -173,6 +189,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 statusMessage.style.color = "#3b82f6";
             }
         }
+    }
+
+    // --- CONTRÔLES DU MODE DÉMO (PRÉSENTATION ÉLUS) ---
+    function setupDemoControls() {
+        document.getElementById("demo-step-1").addEventListener("click", () => {
+            parvisUnlocked = true;
+            gameStep = 1;
+            currentNfcIndex = 0;
+            collectedFragments = [];
+            updatePlayerPosition(PARVIS_LAT, PARVIS_LNG);
+            map.setView([PARVIS_LAT, PARVIS_LNG], 18);
+            updateMissionDisplay();
+            statusMessage.textContent = "⚡ [DÉMO] Parvis débloqué (Étape 1/3 NFC).";
+        });
+
+        document.getElementById("demo-step-2").addEventListener("click", () => {
+            parvisUnlocked = true;
+            gameStep = 2; // Validation finale Acte I
+            collectedFragments = ["LE", "MUR", "MURE"];
+            updateMissionDisplay();
+            statusMessage.textContent = "⚡ [DÉMO] NFC validés. Entrez 'LEMURMURE' et '12'.";
+        });
+
+        document.getElementById("demo-step-3").addEventListener("click", () => {
+            gameStep = 3; // Acte II GPS
+            updatePlayerPosition(TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG);
+            map.setView([TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG], 18);
+            if (!acteIICircle) {
+                acteIICircle = L.circle([TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG], {
+                    color: '#2563eb', fillColor: '#2563eb', fillOpacity: 0.25, radius: ACTE_II_RADIUS
+                }).addTo(map).bindPopup("Zone de l'Acte II");
+            }
+            updateMissionDisplay();
+            statusMessage.textContent = "⚡ [DÉMO] Téléporté sur la zone Acte II.";
+        });
+
+        document.getElementById("demo-step-4").addEventListener("click", () => {
+            gameStep = 6; // Victoire Acte II directe
+            updateMissionDisplay();
+            statusMessage.textContent = "⚡ [DÉMO] Capteurs validés avec succès !";
+        });
     }
 
     function createActionContainer() {
@@ -185,20 +242,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateMissionDisplay() {
         if (gameStep === 0 || gameStep === 1) {
-            if (!parvisUnlocked) {
+            if (!parvisUnlocked && !isDemoMode) {
                 missionTitle.textContent = "Acte I : Rejoignez le Parvis";
                 missionDesc.textContent = "Rendez-vous sur le parvis de l'église pour débloquer l'indice audio et la zone de recherche.";
                 actionContainer.innerHTML = "";
             } else {
+                if (!parvisUnlocked && isDemoMode) parvisUnlocked = true;
                 const currentTarget = nfcTargets[currentNfcIndex];
                 missionTitle.textContent = `Acte I : Balise NFC ${currentNfcIndex + 1} / 3 (${currentTarget.name})`;
-                missionDesc.textContent = `🎧 Indice audio 'enigme1.mp3' disponible !\n${currentTarget.clue}\n\nFragments trouvés : [ ${collectedFragments.join(" - ")} ]`;
+                missionDesc.textContent = `🎧 Indice audio 'enigme1.mp3' disponible !\nIndice : ${currentTarget.clue}\n\nFragments trouvés : [ ${collectedFragments.join(" - ")} ]`;
                 
                 actionContainer.innerHTML = `
-                    <button id="play-audio-btn" class="btn-secondary" style="margin-bottom:10px; width:100%;">🔊 Écouter enigme1.mp3</button>
+                    <button id="play-audio-btn" class="btn-secondary" style="margin-bottom:10px; width:100%; padding:10px; background:#1e293b; color:white; border:1px solid #334155; border-radius:6px; cursor:pointer;">🔊 Écouter l'indice audio</button>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="nfc-input" placeholder="Code NFC (ex: LE)..." style="flex:1; padding:8px;">
-                        <button id="validate-nfc-btn" class="btn-primary">Valider</button>
+                        <input type="text" id="nfc-input" placeholder="Code NFC (ex: LE)..." style="flex:1; padding:10px; background:#020408; border:1px solid #334155; border-radius:6px; color:white;">
+                        <button id="validate-nfc-btn" class="btn-primary" style="padding:10px 15px;">Valider</button>
                     </div>
                 `;
 
@@ -219,19 +277,19 @@ document.addEventListener("DOMContentLoaded", () => {
                             updateMissionDisplay();
                         }
                     } else {
-                        alert("❌ Code NFC incorrect !");
+                        alert("❌ Code NFC incorrect ! (Indice attendu : " + currentTarget.code + ")");
                     }
                 });
             }
         } 
         else if (gameStep === 2) {
             missionTitle.textContent = "Acte I : Validation Finale";
-            missionDesc.textContent = "Entrez les deux mots clés pour valider l'Acte I et passer à l'Acte II :";
+            missionDesc.textContent = "Entrez les deux codes pour valider l'Acte I et passer à l'Acte II :";
             
             actionContainer.innerHTML = `
                 <div style="display:flex; flex-direction:column; gap:10px;">
-                    <input type="text" id="final-word-input" placeholder="Mot assemblé (ex: LEMURMURE)..." style="padding:8px;">
-                    <input type="text" id="final-code-input" placeholder="Code audio secret (ex: 12)..." style="padding:8px;">
+                    <input type="text" id="final-word-input" placeholder="Mot assemblé (ex: LEMURMURE)..." style="padding:10px; background:#020408; border:1px solid #334155; border-radius:6px; color:white;">
+                    <input type="text" id="final-code-input" placeholder="Code audio secret (ex: 12)..." style="padding:10px; background:#020408; border:1px solid #334155; border-radius:6px; color:white;">
                     <button id="validate-final-btn" class="btn-primary">Valider l'Acte I</button>
                 </div>
             `;
@@ -246,16 +304,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     statusMessage.style.color = "#10b981";
                     
                     missionTitle.textContent = "Acte II : L'Astrolabe Céleste";
-                    missionDesc.textContent = "Rejoignez le nouveau point GPS (N 47° 11,085' E 2° 36,823') pour débloquer l'astrolabe.";
+                    missionDesc.textContent = "Rejoignez le nouveau point GPS pour débloquer l'astrolabe.";
                     
                     map.setView([TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG], 18);
-                    acteIICircle = L.circle([TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG], {
-                        color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.25, radius: ACTE_II_RADIUS
-                    }).addTo(map).bindPopup("Zone de l'Acte II");
+                    if (!acteIICircle) {
+                        acteIICircle = L.circle([TARGET_ACTE_II_LAT, TARGET_ACTE_II_LNG], {
+                            color: '#2563eb', fillColor: '#2563eb', fillOpacity: 0.25, radius: ACTE_II_RADIUS
+                        }).addTo(map).bindPopup("Zone de l'Acte II");
+                    }
 
-                    actionContainer.innerHTML = `<p style="color:#3b82f6; font-weight:bold;">🗺️ Suivez la carte GPS...</p>`;
+                    actionContainer.innerHTML = `<p style="color:#60a5fa; font-weight:bold; text-align:center;">🗺️ Suivez la carte GPS vers l'Acte II...</p>`;
                 } else {
-                    alert("❌ L'un des codes est incorrect (Vérifiez LEMURMURE et le code 12).");
+                    alert("❌ Code incorrect (Rappel : LEMURMURE et 12).");
                 }
             });
         }
@@ -264,9 +324,9 @@ document.addEventListener("DOMContentLoaded", () => {
             missionDesc.textContent = "Inclinez votre téléphone horizontalement pour stabiliser la sphère.";
             
             actionContainer.innerHTML = `
-                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; text-align: center;">
-                    <p id="gyro-status" style="margin-bottom: 10px; font-weight: bold; color:#3b82f6;">🔄 En attente d'inclinaison...</p>
-                    <button id="bypass-gyro" class="btn-secondary" style="font-size:0.8rem; padding:6px;">Forcer le gyroscope (Secours)</button>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; text-align: center; border:1px solid #334155;">
+                    <p style="margin-bottom: 10px; font-weight: bold; color:#60a5fa;">🔄 Stabilisation de l'artefact...</p>
+                    <button id="bypass-gyro" class="btn-secondary" style="padding:8px 12px; background:#334155; color:white; border:none; border-radius:6px; cursor:pointer;">Forcer le gyroscope (Secours)</button>
                 </div>
             `;
 
@@ -289,11 +349,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         else if (gameStep === 5) {
             missionTitle.textContent = "Acte II : Le Souffle Givré";
-            missionDesc.textContent = "Soufflez fort dans le microphone pour dissiper la glace.";
+            missionDesc.textContent = "Soufflez fort dans le microphone pour dissiper la glace magique.";
             
             actionContainer.innerHTML = `
-                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; text-align: center;">
-                    <p style="margin-bottom: 10px; font-weight: bold; color:#3b82f6;">❄️ Glace active... Soufflez dans le micro !</p>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; text-align: center; border:1px solid #334155;">
+                    <p style="margin-bottom: 10px; font-weight: bold; color:#60a5fa;">❄️ Glace active... Soufflez dans le micro !</p>
                     <button id="bypass-mic" class="btn-primary" style="margin-top:10px;">Passer l'étape (Secours)</button>
                 </div>
             `;
@@ -335,12 +395,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         }
         else if (gameStep === 6) {
-            missionTitle.textContent = "Acte II : Réussi !";
-            missionDesc.textContent = "La glace a fondu et l'astrolabe est activé.";
+            missionTitle.textContent = "Acte II : Mission Réussie !";
+            missionDesc.textContent = "L'artefact est activé et le secret du territoire est révélé.";
             actionContainer.innerHTML = `
-                <div style="background: rgba(16, 185, 129, 0.2); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #10b981;">
-                    <p style="color: #10b981; font-weight: bold; font-size: 1.1em;">🎉 Acte II Validé !</p>
-                    <p>Code secret révélé : <strong>749</strong></p>
+                <div style="background: rgba(16, 185, 129, 0.15); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #10b981;">
+                    <p style="color: #10b981; font-weight: bold; font-size: 1.1em; margin-bottom: 5px;">🎉 Parcours Validé avec Succès !</p>
+                    <p style="color: white; font-size: 0.9rem;">Code secret final : <strong>749</strong></p>
                 </div>
             `;
         }
