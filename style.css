@@ -1,6 +1,6 @@
 :root {
     --bg-base: #05070c;
-    --card-bg: rgba(13, 18, 30, 0.85);
+    --card-bg: rgba(13, 18, 30, 0.9);
     --border-color: rgba(255, 255, 255, 0.12);
     --accent-blue: #2563eb;
     --accent-red: #dc2626;
@@ -17,7 +17,6 @@
 }
 
 body {
-    /* Dégradé sophistiqué Noir / Profond / Bleu nuit / Touche de rouge sombre en arrière-plan */
     background: radial-gradient(circle at 15% 15%, rgba(220, 38, 38, 0.12) 0%, transparent 40%),
                 radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.15) 0%, transparent 45%),
                 linear-gradient(135deg, #020408 0%, #090d16 50%, #03050a 100%);
@@ -33,11 +32,11 @@ body {
     width: 100%;
     max-width: 480px;
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(37, 99, 235, 0.05);
+    padding: 22px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(37, 99, 235, 0.05);
 }
 
 .screen {
@@ -52,7 +51,7 @@ body {
     display: none !important;
 }
 
-/* En-tête jeu */
+/* En-tête jeu & Bouton Accueil */
 header {
     display: flex;
     justify-content: space-between;
@@ -63,10 +62,28 @@ header {
     font-size: 0.85rem;
 }
 
+.btn-home-mini {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-home-mini:hover {
+    background: rgba(37, 99, 235, 0.3);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
 .timer-box {
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(220, 38, 38, 0.2));
     border: 1px solid rgba(37, 99, 235, 0.4);
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 8px;
     font-weight: bold;
     color: #60a5fa;
@@ -74,12 +91,13 @@ header {
 
 .team-display {
     color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 /* Écran d'accueil Pro */
 .brand-badge {
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .brand-badge span {
@@ -95,12 +113,12 @@ header {
 
 .logo-box {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .pulse-icon {
-    font-size: 2.8rem;
-    margin-bottom: 10px;
+    font-size: 2.6rem;
+    margin-bottom: 8px;
     animation: pulse 2.5s infinite ease-in-out;
 }
 
@@ -110,54 +128,53 @@ header {
 }
 
 h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #ffffff;
-    margin-bottom: 6px;
-    letter-spacing: -0.5px;
+    margin-bottom: 4px;
 }
 
 .logo-box p {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .welcome-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 15px;
+    padding: 15px;
+    margin-bottom: 12px;
 }
 
 .intro-text {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
-    line-height: 1.5;
-    margin-bottom: 18px;
+    line-height: 1.4;
+    margin-bottom: 15px;
     text-align: center;
 }
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 15px;
 }
 
 label {
     display: block;
-    margin-bottom: 6px;
-    font-size: 0.8rem;
+    margin-bottom: 5px;
+    font-size: 0.78rem;
     color: var(--text-muted);
     font-weight: 500;
 }
 
 input[type="text"] {
     width: 100%;
-    padding: 12px;
+    padding: 11px;
     background: #020408;
     border: 1px solid #1e293b;
     border-radius: 8px;
     color: white;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     outline: none;
     transition: all 0.3s ease;
 }
@@ -167,7 +184,6 @@ input[type="text"]:focus {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-/* Boutons d'action premium */
 .btn-primary {
     width: 100%;
     padding: 12px;
@@ -175,7 +191,7 @@ input[type="text"]:focus {
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -184,18 +200,17 @@ input[type="text"]:focus {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #1d4ed8, #1e40af);
-    transform: translateY(-1px);
 }
 
 .btn-demo {
     width: 100%;
-    padding: 11px;
-    margin-top: 10px;
+    padding: 10px;
+    margin-top: 8px;
     background: linear-gradient(135deg, #1e293b, #0f172a);
     color: #f8fafc;
     border: 1px solid rgba(220, 38, 38, 0.4);
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -208,20 +223,20 @@ input[type="text"]:focus {
 
 .footer-note {
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #64748b;
 }
 
 /* Écran de jeu */
 h2 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #ffffff;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 600;
 }
 
 .map-container {
-    height: 190px;
+    height: 170px;
     width: 100%;
     border-radius: 10px;
     margin-bottom: 12px;
@@ -237,38 +252,37 @@ h2 {
 
 .mission-card p {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     line-height: 1.4;
 }
 
 .message {
-    margin-top: 12px;
+    margin-top: 10px;
     text-align: center;
     font-weight: 600;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
 }
 
 /* Panneau démo pro (Mairies) */
 .demo-control-box {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
     border: 1px solid rgba(37, 99, 235, 0.4);
-    padding: 10px;
+    padding: 8px;
     border-radius: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .demo-header {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: bold;
     color: #60a5fa;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    margin-bottom: 6px;
     text-align: center;
 }
 
 .demo-grid {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
 }
 
@@ -276,17 +290,24 @@ h2 {
     background: rgba(37, 99, 235, 0.15);
     border: 1px solid rgba(37, 99, 235, 0.3);
     color: #93c5fd;
-    font-size: 0.7rem;
-    padding: 6px;
-    border-radius: 6px;
+    font-size: 0.65rem;
+    padding: 5px;
+    border-radius: 5px;
     flex: 1;
-    min-width: 75px;
+    min-width: 65px;
     cursor: pointer;
     font-weight: 600;
-    transition: background 0.2s;
 }
 
 .btn-demo-action:hover {
     background: rgba(37, 99, 235, 0.35);
     color: white;
+}
+
+/* Formulaire Tout-en-un */
+.unified-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
 }

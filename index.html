@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patrimoine & Aventure | Escape Game Urbain</title>
+    <title>Chronos Patrimoine | Escape Game Urbain</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
@@ -12,11 +12,11 @@
     <div class="container">
         <!-- En-tête de mission (Jeu en cours) -->
         <header id="game-header" class="hidden">
+            <button id="back-home-btn" class="btn-home-mini" title="Retour à l'accueil">🏠 Accueil</button>
             <div class="timer-box">
-                <span class="label">⏱️ Temps :</span>
-                <span id="timer">02:00:00</span>
+                <span class="label">⏱️</span> <span id="timer">02:00:00</span>
             </div>
-            <div class="team-display">Opérateur : <span id="display-team-name"></span></div>
+            <div class="team-display"><span id="display-team-name"></span></div>
         </header>
 
         <!-- Écran d'accueil Institutionnel / Premium -->
@@ -31,12 +31,12 @@
 
             <div class="welcome-card">
                 <p class="intro-text">
-                    Valorisez votre patrimoine local grâce à un parcours scénarisé combinant géolocalisation, balises NFC et capteurs intelligents.
+                    Valorisez votre patrimoine local grâce à un parcours scénarisé combinant géolocalisation, balises et capteurs intelligents.
                 </p>
 
                 <div class="form-group">
                     <label for="team-name">Nom de la délégation / équipe :</label>
-                    <input type="text" id="team-name" placeholder="Ex: Mairie de Rians - Visite Officielle" required>
+                    <input type="text" id="team-name" placeholder="Ex: Mairie de Rians - Visite Officielle" autocomplete="off">
                 </div>
 
                 <button id="start-btn" class="btn-primary">Lancer le Parcours Réel</button>
@@ -60,10 +60,10 @@
                     <span>⚡ CONTRÔLE PRÉSENTATION ÉLU</span>
                 </div>
                 <div class="demo-grid">
-                    <button id="demo-step-1" class="btn-demo-action">1. Parvis & NFC</button>
-                    <button id="demo-step-2" class="btn-demo-action">2. Validation Code</button>
+                    <button id="demo-step-1" class="btn-demo-action">1. Parvis</button>
+                    <button id="demo-step-2" class="btn-demo-action">2. Assemblage Tout-en-un</button>
                     <button id="demo-step-3" class="btn-demo-action">3. Acte II (GPS)</button>
-                    <button id="demo-step-4" class="btn-demo-action">4. Bypass Capteurs</button>
+                    <button id="demo-step-4" class="btn-demo-action">4. Capteurs</button>
                 </div>
             </div>
 
