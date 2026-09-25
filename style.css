@@ -1,0 +1,157 @@
+:root {
+    --bg-color: #0b0f19;
+    --card-bg: #131c2e;
+    --accent-color: #d4af37; /* Or */
+    --text-color: #e2e8f0;
+    --text-muted: #94a3b8;
+    --danger-color: #ef4444;
+    --success-color: #10b981;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 15px;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--card-bg);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.timer-box {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--accent-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.logo-box {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.clock-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+h1 {
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+}
+
+h2 {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    background: #0b0f19;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--accent-color);
+}
+
+.btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--accent-color);
+    color: #0b0f19;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-secondary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    opacity: 0.9;
+}
+
+.mission-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.message {
+    margin-top: 12px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+}

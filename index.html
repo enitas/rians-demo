@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Game Géolocalisé</title>
+    <!-- Leaflet CSS pour la carte GPS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête avec le Chrono -->
+        <header id="game-header" class="hidden">
+            <div class="timer-box">
+                <span class="label">Chrono :</span>
+                <span id="timer">02:00:00</span>
+            </div>
+            <div class="team-display">Agent : <span id="display-team-name"></span></div>
+        </header>
+
+        <!-- Écran d'accueil -->
+        <section id="screen-welcome" class="screen active">
+            <div class="logo-box">
+                <div class="clock-icon">🕵️‍♂️</div>
+                <h1>Escape Game Urbain</h1>
+                <p>Agence d'Investigation Temporelle</p>
+            </div>
+            <div class="form-group">
+                <label for="team-name">Nom de votre équipe d'agents :</label>
+                <input type="text" id="team-name" placeholder="Ex: Les Détectives" required>
+            </div>
+            <button id="start-btn" class="btn-primary">Lancer la Mission</button>
+        </section>
+
+        <!-- Écran de jeu principal -->
+        <section id="screen-game" class="screen">
+            <h2 id="mission-title">Mission en Cours</h2>
+            
+            <!-- Carte interactive Leaflet -->
+            <div id="map" style="height: 220px; width: 100%; border-radius: 8px; margin-bottom: 15px;"></div>
+
+            <div class="mission-card">
+                <p id="mission-desc" style="white-space: pre-line;">Chargement de la mission...</p>
+                <div id="action-container"></div>
+            </div>
+            <div id="status-message" class="message"></div>
+        </section>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
