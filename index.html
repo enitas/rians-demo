@@ -3,42 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape Game Géolocalisé</title>
-    <!-- Leaflet CSS pour la carte GPS -->
+    <title>Patrimoine & Aventure | Escape Game Urbain</title>
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- En-tête avec le Chrono -->
+        <!-- En-tête de mission (Jeu en cours) -->
         <header id="game-header" class="hidden">
             <div class="timer-box">
-                <span class="label">Chrono :</span>
+                <span class="label">⏱️ Temps :</span>
                 <span id="timer">02:00:00</span>
             </div>
-            <div class="team-display">Agent : <span id="display-team-name"></span></div>
+            <div class="team-display">Opérateur : <span id="display-team-name"></span></div>
         </header>
 
-        <!-- Écran d'accueil -->
+        <!-- Écran d'accueil Institutionnel / Premium -->
         <section id="screen-welcome" class="screen active">
+            <div class="brand-badge"><span>OFFRE TERRITOIRE & CULTURE</span></div>
+            
             <div class="logo-box">
-                <div class="clock-icon">🕵️‍♂️</div>
-                <h1>Escape Game Urbain</h1>
-                <p>Agence d'Investigation Temporelle</p>
+                <div class="pulse-icon">🏛️</div>
+                <h1>Chronos Patrimoine</h1>
+                <p>Expérience d'Immersion Historique & Géolocalisée</p>
             </div>
-            <div class="form-group">
-                <label for="team-name">Nom de votre équipe d'agents :</label>
-                <input type="text" id="team-name" placeholder="Ex: Les Détectives" required>
+
+            <div class="welcome-card">
+                <p class="intro-text">
+                    Valorisez votre patrimoine local grâce à un parcours scénarisé combinant géolocalisation, balises NFC et capteurs intelligents.
+                </p>
+
+                <div class="form-group">
+                    <label for="team-name">Nom de la délégation / équipe :</label>
+                    <input type="text" id="team-name" placeholder="Ex: Mairie de Rians - Visite Officielle" required>
+                </div>
+
+                <button id="start-btn" class="btn-primary">Lancer le Parcours Réel</button>
+                <button id="demo-btn" class="btn-demo">🚀 Activer la Démo Mairie (Sans GPS)</button>
             </div>
-            <button id="start-btn" class="btn-primary">Lancer la Mission</button>
+
+            <div class="footer-note">
+                <p>Solution clé en main pour collectivités et offices de tourisme.</p>
+            </div>
         </section>
 
         <!-- Écran de jeu principal -->
         <section id="screen-game" class="screen">
-            <h2 id="mission-title">Mission en Cours</h2>
+            <div class="game-top-bar">
+                <h2 id="mission-title">Mission en Cours</h2>
+            </div>
             
+            <!-- Panneau de contrôle Mode Démo (Présentation Mairie) -->
+            <div id="demo-panel" class="hidden demo-control-box">
+                <div class="demo-header">
+                    <span>⚡ CONTRÔLE PRÉSENTATION ÉLU</span>
+                </div>
+                <div class="demo-grid">
+                    <button id="demo-step-1" class="btn-demo-action">1. Parvis & NFC</button>
+                    <button id="demo-step-2" class="btn-demo-action">2. Validation Code</button>
+                    <button id="demo-step-3" class="btn-demo-action">3. Acte II (GPS)</button>
+                    <button id="demo-step-4" class="btn-demo-action">4. Bypass Capteurs</button>
+                </div>
+            </div>
+
             <!-- Carte interactive Leaflet -->
-            <div id="map" style="height: 220px; width: 100%; border-radius: 8px; margin-bottom: 15px;"></div>
+            <div id="map" class="map-container"></div>
 
             <div class="mission-card">
                 <p id="mission-desc" style="white-space: pre-line;">Chargement de la mission...</p>
